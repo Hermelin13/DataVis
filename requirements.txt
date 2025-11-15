@@ -1,5 +1,8 @@
 requests
 beautifulsoup4
 pandas
+geopandas
+matplotlib
+shapely
 selenium
 webdriver-manager
