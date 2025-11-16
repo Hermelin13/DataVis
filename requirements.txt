@@ -6,3 +6,4 @@ matplotlib
 shapely
 selenium
 webdriver-manager
+chardet
