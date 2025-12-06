@@ -120,68 +120,84 @@ if 'x' in df.columns and 'y' in df.columns:
         print(f"Rozsah X: {valid_coords['x'].min():,.0f} až {valid_coords['x'].max():,.0f}")
         print(f"Rozsah Y: {valid_coords['y'].min():,.0f} až {valid_coords['y'].max():,.0f}")
 
-# Vizualizace 1: Trend v čase
+# Vizualizace - každá zvlášť
 print("\n=== GENEROVÁNÍ VIZUALIZACÍ ===")
-fig, axes = plt.subplots(2, 2, figsize=(15, 10))
 
 # Graf 1: Nehody podle roků
+fig1, ax1 = plt.subplots(figsize=(10, 6))
 rok_data = df['rok'].value_counts().sort_index()
-axes[0, 0].bar(rok_data.index, rok_data.values, color='steelblue')
-axes[0, 0].set_title('Počet nehod podle roků', fontsize=14)
-axes[0, 0].set_xlabel('Rok')
-axes[0, 0].set_ylabel('Počet nehod')
-axes[0, 0].grid(axis='y', alpha=0.3)
+ax1.bar(rok_data.index, rok_data.values, color='steelblue')
+ax1.set_title('Počet nehod podle roků', fontsize=14, fontweight='bold')
+ax1.set_xlabel('Rok')
+ax1.set_ylabel('Počet nehod')
+ax1.grid(axis='y', alpha=0.3)
+plt.tight_layout()
+plt.savefig("data/nehody_podle_roku.png", dpi=150)
+print("✓ Graf 1: data/nehody_podle_roku.png")
+plt.close()
 
 # Graf 2: Top 10 lokalit
+fig2, ax2 = plt.subplots(figsize=(10, 6))
 top_10 = df['zuj'].value_counts().head(10)
-axes[0, 1].barh(range(len(top_10)), top_10.values, color='coral')
-axes[0, 1].set_yticks(range(len(top_10)))
-axes[0, 1].set_yticklabels(top_10.index, fontsize=9)
-axes[0, 1].set_title('Top 10 lokalit podle počtu nehod', fontsize=14)
-axes[0, 1].set_xlabel('Počet nehod')
-axes[0, 1].invert_yaxis()
+ax2.barh(range(len(top_10)), top_10.values, color='coral')
+ax2.set_yticks(range(len(top_10)))
+ax2.set_yticklabels(top_10.index, fontsize=9)
+ax2.set_title('Top 10 lokalit podle počtu nehod', fontsize=14, fontweight='bold')
+ax2.set_xlabel('Počet nehod')
+ax2.invert_yaxis()
+plt.tight_layout()
+plt.savefig("data/nehody_top_lokality.png", dpi=150)
+print("✓ Graf 2: data/nehody_top_lokality.png")
+plt.close()
 
 # Graf 3: Hlavní příčiny
 if 'hlavni_pricina' in df.columns:
+    fig3, ax3 = plt.subplots(figsize=(10, 8))
     priciny_top = df['hlavni_pricina'].value_counts().head(8)
-    axes[1, 0].pie(priciny_top.values, labels=priciny_top.index, autopct='%1.1f%%', startangle=90)
-    axes[1, 0].set_title('Hlavní příčiny nehod', fontsize=14)
+    ax3.pie(priciny_top.values, labels=priciny_top.index, autopct='%1.1f%%', startangle=90)
+    ax3.set_title('Hlavní příčiny nehod', fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig("data/nehody_priciny.png", dpi=150)
+    print("✓ Graf 3: data/nehody_priciny.png")
+    plt.close()
 
 # Graf 4: Nehody podle měsíců
 if 'mesic' in df.columns:
+    fig4, ax4 = plt.subplots(figsize=(10, 6))
     mesic_data = df['mesic'].value_counts().sort_index()
-    axes[1, 1].plot(mesic_data.index, mesic_data.values, marker='o', linewidth=2, color='green')
-    axes[1, 1].set_title('Nehody podle měsíců', fontsize=14)
-    axes[1, 1].set_xlabel('Měsíc')
-    axes[1, 1].set_ylabel('Počet nehod')
-    axes[1, 1].set_xticks(range(1, 13))
-    axes[1, 1].grid(True, alpha=0.3)
+    ax4.plot(mesic_data.index, mesic_data.values, marker='o', linewidth=2, color='green', markersize=8)
+    ax4.set_title('Nehody podle měsíců', fontsize=14, fontweight='bold')
+    ax4.set_xlabel('Měsíc')
+    ax4.set_ylabel('Počet nehod')
+    ax4.set_xticks(range(1, 13))
+    ax4.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("data/nehody_podle_mesicu.png", dpi=150)
+    print("✓ Graf 4: data/nehody_podle_mesicu.png")
+    plt.close()
 
-plt.tight_layout()
-plt.savefig("data/nehody_analyza.png", dpi=150)
-print("✓ Grafy uloženy do: data/nehody_analyza.png")
-
-# Mapa nehod (pokud jsou souřadnice)
+# Graf 5: Mapa nehod (pokud jsou souřadnice)
 if 'x' in df.columns and 'y' in df.columns:
     valid_coords = df[(df['x'].notna()) & (df['y'].notna())].copy()
     if len(valid_coords) > 0:
-        fig, ax = plt.subplots(figsize=(12, 10))
+        fig5, ax5 = plt.subplots(figsize=(12, 10))
         
         # Vzorkování pro rychlejší zobrazení
         sample_size = min(10000, len(valid_coords))
         sample = valid_coords.sample(sample_size)
         
-        scatter = ax.scatter(sample['x'], sample['y'], 
+        scatter = ax5.scatter(sample['x'], sample['y'], 
                            c=sample['usmrceno_os'], 
                            cmap='YlOrRd', 
                            alpha=0.3, 
                            s=5)
-        ax.set_title(f'Mapa nehod (vzorek {sample_size:,} z {len(valid_coords):,})', fontsize=16)
-        ax.set_xlabel('X souřadnice')
-        ax.set_ylabel('Y souřadnice')
-        plt.colorbar(scatter, label='Počet usmrcených', ax=ax)
+        ax5.set_title(f'Mapa nehod (vzorek {sample_size:,} z {len(valid_coords):,})', fontsize=16, fontweight='bold')
+        ax5.set_xlabel('X souřadnice')
+        ax5.set_ylabel('Y souřadnice')
+        plt.colorbar(scatter, label='Počet usmrcených', ax=ax5)
         plt.tight_layout()
         plt.savefig("data/nehody_mapa.png", dpi=150)
-        print("✓ Mapa nehod uložena do: data/nehody_mapa.png")
+        print("✓ Graf 5: data/nehody_mapa.png")
+        plt.close()
 
 print("\n=== ANALÝZA DOKONČENA ===")
