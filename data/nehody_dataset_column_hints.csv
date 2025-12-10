@@ -1,0 +1,49 @@
+﻿nazev atributu;popis;
+datum;datum nehody;
+rok;rok ;
+zavineni;zavinění;
+viditelnost;viditelnost;
+cas;čas nehody;
+hodina;hodina nehody;
+mesic_t;měsíc nehody;
+id;evidenční číslo nehody v evidenci PČR;
+den_v_tydnu;den kdy se stala nehoda;
+alkohol;alkohol u viníka;
+nasledky;následky nehody;
+stav_vozovky;stav vozovky;
+povetrnostni_podm;povětrnostní podmínky;
+rozhled;rozhledové podmínky v místě nehody;
+misto_nehody;místo nehody;
+druh_komun;druh komunikace;
+hl_pricina;hlavní příčina;
+pricina;detailní příčina;
+prekazka;druh překážky při nárazu;
+stav_komunikace;stav komunikace;
+deleni_komunikace;dělení komunikace;
+usmrceno_os;počet usmrcených osob (* do 24 hod od nehody);
+tez_zran_os;počet těžce zraněných osob (* do 24 hod od nehody);
+leh_zran_os;počet lehce zraněných osob (* do 24 hod od nehody);
+pocet_vozidel;počet zúčastněných vozidel při nehodě;
+d;souřadnice x S-JTSK;
+e;souřadnice y S-JTSK;
+MC_nazev;městská část název;
+trida_kom;třída komunikace dle Ceda STREETNET;
+smrt ;smrtelné zranění;pokud =1 daná osoba zemřela, byla těžce zraněna...
+tz;těžké zranění;
+lz;lehké zranění;
+smrt_dny;počet dní od nehody kdy došlo k úmrtí osoby;
+smrtpo;smrtelné zranění po nehodě;pokud=1 daná osoba zemřela déle než 24 h od nehody
+nasledek;následek u dané osoby;
+pohlavi;pohlaví osoby;
+ozn_osoba;označení osoby;
+druh_vozidla;druh vozidla;
+hmotna_skoda;hmotná škoda v Kč;
+stav_ridic;stav řidiče;
+ovlivnění řidiče;ovlivnění řidiče;1 řidič nebyl ovlivněn
+;;2 oslněn sluncem
+;;3 oslněn světlomety jiného vozidla
+;;4 ovlivněn jednáním jiného účastníka silničního provozu
+;;5 ovlivněn při vyhýbání lesní zvěři, domácímu zvířectvu apod.
+;;0 jiné ovlivnění
+POINT_X;souřadnice x °;
+POINT_Y;;

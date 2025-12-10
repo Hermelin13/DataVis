@@ -2,57 +2,75 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
+import sys
 
-print("=== ANALÝZA DOPRAVNÍCH NEHOD ===\n")
+# Nastavení pro český výstup
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial']
+plt.rcParams['axes.unicode_minus'] = False
+
+## fix nesprávé, přenosti
+
+# Otevření souboru pro zápis výstupu
+output_file = open('graphs/nehody/nehody_analyza_report.txt', 'w', encoding='utf-8')
+
+def tiskni(text=""):
+    output_file.write(text + '\n')
 
 # Načtení dat
-print("Načítání datasetu...")
 df = pd.read_csv("data/dopravni_nehody.csv", low_memory=False)
 
-print(f"✓ Načteno {len(df):,} záznamů, {len(df.columns)} sloupců")
-print(f"✓ Velikost v paměti: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB\n")
-
 # Základní statistiky
-print("=== ZÁKLADNÍ PŘEHLED ===")
-print(f"Časové rozmezí: {df['datum'].min()} až {df['datum'].max()}")
-print(f"Počet unikátních lokalit: {df['zuj'].nunique()}")
-print(f"Počet unikátních nehod: {df['id_nehody'].nunique()}")
-print(f"Počet zaznamenaných osob: {len(df)}")
+tiskni("ZÁKLADNÍ PŘEHLED")
+tiskni("-" * 80)
+tiskni(f"Časové rozmezí: {df['datum'].min()} až {df['datum'].max()}")
+tiskni(f"Počet unikátních lokalit: {df['zuj'].nunique()}")
+tiskni(f"Počet unikátních nehod: {df['id_nehody'].nunique()}")
+tiskni(f"Počet zaznamenaných záznamů: {len(df):,}")
+tiskni()
 
 # Statistiky následků
-print("\n=== STATISTIKY NÁSLEDKŮ ===")
-print(f"Celkem usmrcených osob: {df['usmrceno_os'].sum()}")
-print(f"Celkem těžce zraněných: {df['tezce_zran_os'].sum()}")
-print(f"Celkem lehce zraněných: {df['lehce_zran_os'].sum()}")
-print(f"Celková hmotná škoda: {df['hmotna_skoda'].sum():,.0f} Kč")
-print(f"Průměrná škoda na nehodu: {df['hmotna_skoda'].mean():,.0f} Kč")
+tiskni("STATISTIKY NÁSLEDKŮ")
+tiskni("-" * 80)
+tiskni(f"Celkem usmrcených osob: {df['usmrceno_os'].sum():,}")
+tiskni(f"Celkem těžce zraněných: {df['tezce_zran_os'].sum():,}")
+tiskni(f"Celkem lehce zraněných: {df['lehce_zran_os'].sum():,}")
+tiskni(f"Celková hmotná škoda: {df['hmotna_skoda'].sum():,.0f} Kč")
+tiskni(f"Průměrná škoda na nehodu: {df['hmotna_skoda'].mean():,.0f} Kč")
+tiskni()
 
 # Časové trendy
-print("\n=== ROZDĚLENÍ PODLE ROKŮ ===")
+tiskni("ROZDĚLENÍ PODLE ROKŮ")
+tiskni("-" * 80)
 rok_stats = df['rok'].value_counts().sort_index()
 for rok, pocet in rok_stats.items():
     usmrceni = df[df['rok'] == rok]['usmrceno_os'].sum()
-    print(f"  {rok}: {pocet:>6,} nehod, {usmrceni:>4} usmrcených")
+    tiskni(f"  {rok}: {pocet:>6,} nehod, {usmrceni:>4} usmrcených")
+tiskni()
 
 # Měsíční statistiky
-print("\n=== ROZDĚLENÍ PODLE MĚSÍCŮ ===")
+tiskni("ROZDĚLENÍ PODLE MĚSÍCŮ")
+tiskni("-" * 80)
 if 'mesic' in df.columns:
     mesic_stats = df['mesic'].value_counts().sort_index()
     mesice = ['leden', 'únor', 'březen', 'duben', 'květen', 'červen',
               'červenec', 'srpen', 'září', 'říjen', 'listopad', 'prosinec']
     for mesic_num, pocet in mesic_stats.items():
         mesic_nazev = mesice[int(mesic_num)-1] if 1 <= mesic_num <= 12 else f"měsíc {mesic_num}"
-        print(f"  {mesic_nazev}: {pocet:,} nehod")
+        tiskni(f"  {mesic_nazev}: {pocet:,} nehod")
+tiskni()
 
 # Denní čas
-print("\n=== ROZDĚLENÍ PODLE DOBY DNE ===")
+tiskni("ROZDĚLENÍ PODLE DOBY DNE")
+tiskni("-" * 80)
 if 'doba' in df.columns:
     doba_stats = df['doba'].value_counts()
     for doba, pocet in doba_stats.items():
-        print(f"  {doba}: {pocet:,} nehod")
+        tiskni(f"  {doba}: {pocet:,} nehod")
+tiskni()
 
 # Den v týdnu
-print("\n=== ROZDĚLENÍ PODLE DNE V TÝDNU ===")
+tiskni("ROZDĚLENÍ PODLE DNE V TÝDNU")
+tiskni("-" * 80)
 if 'den_v_tydnu' in df.columns:
     dny = ['pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota', 'neděle']
     den_stats = df['den_v_tydnu'].value_counts().sort_index()
@@ -62,67 +80,78 @@ if 'den_v_tydnu' in df.columns:
             den_nazev = dny[den_int-1] if 1 <= den_int <= 7 else f"den {den_num}"
         except (ValueError, TypeError, IndexError):
             den_nazev = str(den_num)
-        print(f"  {den_nazev}: {pocet:,} nehod")
+        tiskni(f"  {den_nazev}: {pocet:,} nehod")
+tiskni()
 
 # Top lokality
-print("\n=== TOP 15 LOKALIT PODLE POČTU NEHOD ===")
-top_lokality = df['zuj'].value_counts().head(15)
+tiskni("TOP 15 LOKALIT PODLE POČTU NEHOD")
+tiskni("-" * 80)
+top_lokality = df['zuj'].value_counts().head(15)  
 for idx, (lokace, pocet) in enumerate(top_lokality.items(), 1):
     usmrceni = df[df['zuj'] == lokace]['usmrceno_os'].sum()
-    print(f"  {idx:2}. {lokace:25} {pocet:>6,} nehod, {usmrceni:>4} usmrcených")
+    tiskni(f"  {idx:2}. {lokace:25} {pocet:>6,} nehod, {usmrceni:>4} usmrcených")
+tiskni()
 
 # Hlavní příčiny
-print("\n=== HLAVNÍ PŘÍČINY NEHOD ===")
+tiskni("HLAVNÍ PŘÍČINY NEHOD")
+tiskni("-" * 80)
 if 'hlavni_pricina' in df.columns:
     priciny = df['hlavni_pricina'].value_counts().head(10)
     for pricina, pocet in priciny.items():
         procento = (pocet / len(df)) * 100
-        print(f"  {pricina:35} {pocet:>6,} ({procento:>5.2f}%)")
+        tiskni(f"  {pricina:35} {pocet:>6,} ({procento:>5.2f}%)")
+tiskni()
 
 # Alkohol
-print("\n=== VLIV ALKOHOLU ===")
+tiskni("VLIV ALKOHOLU")
+tiskni("-" * 80)
 if 'alkohol_vinik' in df.columns:
     alkohol_stats = df['alkohol_vinik'].value_counts()
     celkem_s_alkoholem = alkohol_stats.get('ano', 0)
     procento_alkohol = (celkem_s_alkoholem / len(df)) * 100
-    print(f"  Nehody s alkoholem: {celkem_s_alkoholem:,} ({procento_alkohol:.2f}%)")
+    tiskni(f"  Nehody s alkoholem: {celkem_s_alkoholem:,} ({procento_alkohol:.2f}%)")
     
-    # Úmrtnost při alkoholu
+    # Úsmrtnost při alkoholu
     usmrceni_alkohol = df[df['alkohol_vinik'] == 'ano']['usmrceno_os'].sum()
     usmrceni_celkem = df['usmrceno_os'].sum()
     if usmrceni_celkem > 0:
         procento_smrti = (usmrceni_alkohol / usmrceni_celkem) * 100
-        print(f"  Usmrcení při alkoholu: {usmrceni_alkohol} ({procento_smrti:.1f}% všech úmrtí)")
+        tiskni(f"  Usmrcení při alkoholu: {usmrceni_alkohol} ({procento_smrti:.1f}% všech úmrtí)")
+tiskni()
 
 # Stav vozovky
-print("\n=== STAV VOZOVKY ===")
+tiskni("VLIV STAVU VOZOVKY")
+tiskni("-" * 80)
 if 'stav_vozovky' in df.columns:
     stav_stats = df['stav_vozovky'].value_counts().head(10)
     for stav, pocet in stav_stats.items():
         procento = (pocet / len(df)) * 100
-        print(f"  {stav:25} {pocet:>6,} ({procento:>5.2f}%)")
+        tiskni(f"  {stav:25} {pocet:>6,} ({procento:>5.2f}%)")
+tiskni()
 
 # Počasí
-print("\n=== POVĚTRNOSTNÍ PODMÍNKY ===")
+tiskni("VLIV POVĚTRNOSTNÍCH PODMÍNEK")
+tiskni("-" * 80)
 if 'povetrnostni_podm' in df.columns:
     pocasi_stats = df['povetrnostni_podm'].value_counts().head(10)
     for pocasi, pocet in pocasi_stats.items():
         procento = (pocet / len(df)) * 100
-        print(f"  {pocasi:25} {pocet:>6,} ({procento:>5.2f}%)")
+        tiskni(f"  {pocasi:25} {pocet:>6,} ({procento:>5.2f}%)")
+tiskni()
 
 # Geografická analýza
-print("\n=== GEOGRAFICKÁ DATA ===")
+tiskni("GEOGRAFICKÁ DATA")
+tiskni("-" * 80)
 if 'x' in df.columns and 'y' in df.columns:
     # Filtrovat validní souřadnice
     valid_coords = df[(df['x'].notna()) & (df['y'].notna())]
-    print(f"Záznamy s platnou GPS: {len(valid_coords):,} ({len(valid_coords)/len(df)*100:.1f}%)")
+    tiskni(f"Záznamy s platnou GPS: {len(valid_coords):,} ({len(valid_coords)/len(df)*100:.1f}%)")
     if len(valid_coords) > 0:
-        print(f"Rozsah X: {valid_coords['x'].min():,.0f} až {valid_coords['x'].max():,.0f}")
-        print(f"Rozsah Y: {valid_coords['y'].min():,.0f} až {valid_coords['y'].max():,.0f}")
+        tiskni(f"Rozsah X: {valid_coords['x'].min():,.0f} až {valid_coords['x'].max():,.0f}")
+        tiskni(f"Rozsah Y: {valid_coords['y'].min():,.0f} až {valid_coords['y'].max():,.0f}")
+tiskni()
 
-# Vizualizace - každá zvlášť
-print("\n=== GENEROVÁNÍ VIZUALIZACÍ ===")
-
+# Vizualizace
 # Graf 1: Nehody podle roků
 fig1, ax1 = plt.subplots(figsize=(10, 6))
 rok_data = df['rok'].value_counts().sort_index()
@@ -132,8 +161,8 @@ ax1.set_xlabel('Rok')
 ax1.set_ylabel('Počet nehod')
 ax1.grid(axis='y', alpha=0.3)
 plt.tight_layout()
-plt.savefig("data/nehody_podle_roku.png", dpi=150)
-print("✓ Graf 1: data/nehody_podle_roku.png")
+plt.savefig("graphs/nehody/nehody_podle_roku.png", dpi=150)
+print("Graf 1: graphs/nehody/nehody_podle_roku.png")
 plt.close()
 
 # Graf 2: Top 10 lokalit
@@ -146,8 +175,8 @@ ax2.set_title('Top 10 lokalit podle počtu nehod', fontsize=14, fontweight='bold
 ax2.set_xlabel('Počet nehod')
 ax2.invert_yaxis()
 plt.tight_layout()
-plt.savefig("data/nehody_top_lokality.png", dpi=150)
-print("✓ Graf 2: data/nehody_top_lokality.png")
+plt.savefig("graphs/nehody/nehody_top_lokality.png", dpi=150)
+print("Graf 2: graphs/nehody/nehody_top_lokality.png")
 plt.close()
 
 # Graf 3: Hlavní příčiny
@@ -157,8 +186,8 @@ if 'hlavni_pricina' in df.columns:
     ax3.pie(priciny_top.values, labels=priciny_top.index, autopct='%1.1f%%', startangle=90)
     ax3.set_title('Hlavní příčiny nehod', fontsize=14, fontweight='bold')
     plt.tight_layout()
-    plt.savefig("data/nehody_priciny.png", dpi=150)
-    print("✓ Graf 3: data/nehody_priciny.png")
+    plt.savefig("graphs/nehody/nehody_priciny.png", dpi=150)
+    print("Graf 3: graphs/nehody/nehody_priciny.png")
     plt.close()
 
 # Graf 4: Nehody podle měsíců
@@ -172,8 +201,8 @@ if 'mesic' in df.columns:
     ax4.set_xticks(range(1, 13))
     ax4.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("data/nehody_podle_mesicu.png", dpi=150)
-    print("✓ Graf 4: data/nehody_podle_mesicu.png")
+    plt.savefig("graphs/nehody/nehody_podle_mesicu.png", dpi=150)
+    print("Graf 4: graphs/nehody/nehody_podle_mesicu.png")
     plt.close()
 
 # Graf 5: Mapa nehod (pokud jsou souřadnice)
@@ -196,8 +225,8 @@ if 'x' in df.columns and 'y' in df.columns:
         ax5.set_ylabel('Y souřadnice')
         plt.colorbar(scatter, label='Počet usmrcených', ax=ax5)
         plt.tight_layout()
-        plt.savefig("data/nehody_mapa.png", dpi=150)
-        print("✓ Graf 5: data/nehody_mapa.png")
+        plt.savefig("graphs/nehody/nehody_mapa.png", dpi=150)
+        print("Graf 5: graphs/nehody/nehody_mapa.png")
         plt.close()
 
-print("\n=== ANALÝZA DOKONČENA ===")
+output_file.close()
