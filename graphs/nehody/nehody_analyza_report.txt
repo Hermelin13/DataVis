@@ -81,10 +81,10 @@ TOP 15 LOKALIT PODLE POČTU NEHOD
 HLAVNÍ PŘÍČINY NEHOD
 --------------------------------------------------------------------------------
   nesprávný způsob jízdy              47,343 (63.89%)
-  nedání přenosti v jízdě             15,891 (21.45%)
+  nedání přednosti v jízdě            15,891 (21.45%)
   nepřiměřená rychlost jízdy           6,386 ( 8.62%)
   nezaviněno řidičem                   3,782 ( 5.10%)
-  nesprávé předjíždění                   415 ( 0.56%)
+  nesprávné předjíždění                  415 ( 0.56%)
   technická závada vozidla               282 ( 0.38%)
 
 VLIV ALKOHOLU
