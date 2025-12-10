@@ -32,33 +32,33 @@ ROZDĚLENÍ PODLE ROKŮ
 
 ROZDĚLENÍ PODLE MĚSÍCŮ
 --------------------------------------------------------------------------------
-  leden: 5,546 nehod
-  únor: 5,078 nehod
-  březen: 5,698 nehod
-  duben: 6,049 nehod
-  květen: 6,708 nehod
-  červen: 6,925 nehod
-  červenec: 6,022 nehod
-  srpen: 6,128 nehod
-  září: 6,688 nehod
-  říjen: 7,004 nehod
-  listopad: 6,284 nehod
-  prosinec: 5,969 nehod
+  leden:  5,546 nehod,   16 usmrcených
+  únor:  5,078 nehod,   21 usmrcených
+  březen:  5,698 nehod,   25 usmrcených
+  duben:  6,049 nehod,   30 usmrcených
+  květen:  6,708 nehod,   45 usmrcených
+  červen:  6,925 nehod,   23 usmrcených
+  červenec:  6,022 nehod,  106 usmrcených
+  srpen:  6,128 nehod,   10 usmrcených
+  září:  6,688 nehod,   46 usmrcených
+  říjen:  7,004 nehod,   24 usmrcených
+  listopad:  6,284 nehod,   37 usmrcených
+  prosinec:  5,969 nehod,   39 usmrcených
 
 ROZDĚLENÍ PODLE DOBY DNE
 --------------------------------------------------------------------------------
-  den: 49,406 nehod
-  noc: 24,693 nehod
+  den: 49,406 nehod,  355 usmrcených
+  noc: 24,693 nehod,   67 usmrcených
 
 ROZDĚLENÍ PODLE DNE V TÝDNU
 --------------------------------------------------------------------------------
-  neděle: 6,680 nehod
-  pondělí: 12,091 nehod
-  pátek: 12,365 nehod
-  sobota: 7,888 nehod
-  středa: 11,796 nehod
-  úterý: 11,327 nehod
-  čtvrtek: 11,952 nehod
+  pondělí: 12,091 nehod,  154 usmrcených
+  úterý: 11,327 nehod,   42 usmrcených
+  středa: 11,796 nehod,   53 usmrcených
+  čtvrtek: 11,952 nehod,   47 usmrcených
+  pátek: 12,365 nehod,   61 usmrcených
+  sobota:  7,888 nehod,   33 usmrcených
+  neděle:  6,680 nehod,   32 usmrcených
 
 TOP 15 LOKALIT PODLE POČTU NEHOD
 --------------------------------------------------------------------------------
@@ -86,6 +86,17 @@ HLAVNÍ PŘÍČINY NEHOD
   nezaviněno řidičem                   3,782 ( 5.10%)
   nesprávné předjíždění                  415 ( 0.56%)
   technická závada vozidla               282 ( 0.38%)
+
+NEHODY A USMRCENÍ PODLE ZAVINĚNÍ
+--------------------------------------------------------------------------------
+  řidičem motorového vozidla     68,426 nehod (92.34%),  391 usmrcených
+  chodcem                         2,394 nehod ( 3.23%),   26 usmrcených
+  řidičem nemotorového vozidla    1,609 nehod ( 2.17%),    5 usmrcených
+  lesní zvěří, domácím zvířectvem    693 nehod ( 0.94%),    0 usmrcených
+  závadou komunikace                310 nehod ( 0.42%),    0 usmrcených
+  jiné zaviněn                      301 nehod ( 0.41%),    0 usmrcených
+  technickou závadou vozidla        282 nehod ( 0.38%),    0 usmrcených
+  jiným účastníkem silničního provozu     84 nehod ( 0.11%),    0 usmrcených
 
 VLIV ALKOHOLU
 --------------------------------------------------------------------------------
