@@ -100,8 +100,15 @@ NEHODY A USMRCENÍ PODLE ZAVINĚNÍ
 
 VLIV ALKOHOLU
 --------------------------------------------------------------------------------
-  Nehody s alkoholem: 4,489 (6.06%)
-  Usmrcení při alkoholu: 31 (7.3% všech úmrtí)
+  bez alkoholu : 37,051 nehod (50.00%), usmrceno 291, úmrtnost  0.79%
+  s alkoholem  :  4,489 nehod ( 6.06%), usmrceno 31, úmrtnost  0.69%
+  nezjištěno   : 32,559 nehod (43.94%), usmrceno 100, úmrtnost  0.31%
+  Nejvyšší úmrtnost podle hladiny (min 20 záznamů):
+    Pod vlivem drog: 315 nehod, 5 usmrc., úmrtnost 1.59%
+    Ano, obsah alkoholu v krvi do 0,24 ‰: 351 nehod, 5 usmrc., úmrtnost 1.42%
+    Ano, obsah alkoholu v krvi od 0,24‰ do 0,5‰: 531 nehod, 6 usmrc., úmrtnost 1.13%
+    Ne: 37051 nehod, 291 usmrc., úmrtnost 0.79%
+    Ano, obsah alkoholu v krvi od 1,0‰ do 1,5‰: 549 nehod, 3 usmrc., úmrtnost 0.55%
 
 VLIV STAVU VOZOVKY
 --------------------------------------------------------------------------------

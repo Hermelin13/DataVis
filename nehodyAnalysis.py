@@ -125,17 +125,36 @@ tiskni()
 tiskni("VLIV ALKOHOLU")
 tiskni("-" * 80)
 if 'alkohol_vinik' in df.columns:
-    alkohol_stats = df['alkohol_vinik'].value_counts()
-    celkem_s_alkoholem = alkohol_stats.get('ano', 0)
-    procento_alkohol = (celkem_s_alkoholem / len(df)) * 100
-    tiskni(f"  Nehody s alkoholem: {celkem_s_alkoholem:,} ({procento_alkohol:.2f}%)")
-    
-    # Úsmrtnost při alkoholu
-    usmrceni_alkohol = df[df['alkohol_vinik'] == 'ano']['usmrceno_os'].sum()
-    usmrceni_celkem = df['usmrceno_os'].sum()
-    if usmrceni_celkem > 0:
-        procento_smrti = (usmrceni_alkohol / usmrceni_celkem) * 100
-        tiskni(f"  Usmrcení při alkoholu: {usmrceni_alkohol} ({procento_smrti:.1f}% všech úmrtí)")
+    alkohol_stats = df['alkohol_vinik'].fillna('nezjištěno').str.lower().map(
+        lambda x: 's alkoholem' if x == 'ano' else ('bez alkoholu' if x == 'ne' else 'nezjištěno')
+    )
+    alko_counts = alkohol_stats.value_counts()
+    alko_usmrceni = df.groupby(alkohol_stats)['usmrceno_os'].sum()
+
+    total = len(df)
+    for k in ['bez alkoholu', 's alkoholem', 'nezjištěno']:
+        pocet = alko_counts.get(k, 0)
+        usmr = alko_usmrceni.get(k, 0)
+        fatal_rate = (usmr / pocet * 100) if pocet else 0
+        podil = (pocet / total * 100) if total else 0
+        tiskni(f"  {k:13}: {pocet:>6,} nehod ({podil:>5.2f}%), usmrceno {int(usmr)}, úmrtnost {fatal_rate:>5.2f}%")
+
+    # Úmrtnost při konkrétních hladinách alkoholu (řidič)
+    if 'alkohol' in df.columns:
+        alkohol_hladina = df['alkohol'].fillna('Nezjištěno')
+        hladina_counts = alkohol_hladina.value_counts()
+        hladina_usmrceni = df.groupby(alkohol_hladina)['usmrceno_os'].sum()
+        hladina_stats = (
+            pd.DataFrame({'nehod': hladina_counts, 'usmrceni': hladina_usmrceni})
+            .fillna(0)
+        )
+        hladina_stats['umrtnost_pct'] = (hladina_stats['usmrceni'] / hladina_stats['nehod']) * 100
+        # report top 5 dle úmrtnosti pro kategorie s alespoň 20 záznamy
+        top_hladiny = hladina_stats[hladina_stats['nehod'] >= 20].sort_values('umrtnost_pct', ascending=False).head(5)
+        if not top_hladiny.empty:
+            tiskni("  Nejvyšší úmrtnost podle hladiny (min 20 záznamů):")
+            for name, row in top_hladiny.iterrows():
+                tiskni(f"    {name}: {int(row['nehod'])} nehod, {int(row['usmrceni'])} usmrc., úmrtnost {row['umrtnost_pct']:.2f}%")
 tiskni()
 
 # Stav vozovky
@@ -281,6 +300,78 @@ plt.tight_layout()
 plt.savefig("graphs/nehody/nehody_top_lokality_procenta_usmrceni.png", dpi=150)
 print("Graf 2c: graphs/nehody/nehody_top_lokality_procenta_usmrceni.png")
 plt.close()
+
+# Graf 2d: Nehody s alkoholem / s drogami / bez (počty, úmrtnost)
+if 'alkohol_vinik' in df.columns:
+    fig2d, ax2d = plt.subplots(figsize=(9, 6))
+
+    def stav_alko_drogy(row):
+        alko_flag = str(row['alkohol_vinik']).lower() if pd.notna(row['alkohol_vinik']) else ''
+        alko_popis = str(row['alkohol']).lower() if 'alkohol' in row and pd.notna(row['alkohol']) else ''
+        if 'drog' in alko_popis:
+            return 'drogy'
+        if alko_flag == 'ano' or 'alkohol' in alko_popis:
+            return 'alkohol'
+        if alko_flag == 'ne':
+            return 'bez alkoholu/drog'
+        return 'nezjištěno'
+
+    status_series = df.apply(stav_alko_drogy, axis=1)
+    status_counts = status_series.value_counts()
+    status_usmrceni = df.groupby(status_series)['usmrceno_os'].sum()
+    order = ['bez alkoholu/drog', 'alkohol', 'drogy', 'nezjištěno']
+    colors = ['steelblue', 'firebrick', 'purple', 'gray']
+    counts_ordered = [status_counts.get(k, 0) for k in order]
+    deaths_ordered = [status_usmrceni.get(k, 0) for k in order]
+    fatal_rates = [(d / c * 100) if c else 0 for d, c in zip(deaths_ordered, counts_ordered)]
+
+    bars4 = ax2d.bar(order, counts_ordered, color=colors)
+    ax2d.set_ylabel('Počet nehod')
+    ax2d.set_title('Nehody: alkohol vs drogy vs bez')
+
+    for bar, d, rate in zip(bars4, deaths_ordered, fatal_rates):
+        height = bar.get_height()
+        ax2d.text(bar.get_x() + bar.get_width()/2, height * 1.01,
+                  f"{int(height)} nehod\n{int(d)} usmrc. ({rate:.2f}% úmrt.)",
+                  ha='center', va='bottom', fontsize=8)
+
+    plt.tight_layout()
+    plt.savefig("graphs/nehody/nehody_alkohol_srovnani.png", dpi=150)
+    print("Graf 2d: graphs/nehody/nehody_alkohol_srovnani.png")
+    plt.close()
+
+# Graf 2e: Úmrtnost podle hladiny alkoholu (řidič) – kategorie s min 20 záznamy
+if 'alkohol' in df.columns:
+    fig2e, ax2e = plt.subplots(figsize=(12, 7))
+    alkohol_hladina = df['alkohol'].fillna('Nezjištěno')
+    hladina_counts = alkohol_hladina.value_counts()
+    hladina_usmrceni = df.groupby(alkohol_hladina)['usmrceno_os'].sum()
+    hladina_stats = (
+        pd.DataFrame({'nehod': hladina_counts, 'usmrceni': hladina_usmrceni})
+        .fillna(0)
+    )
+    hladina_stats['umrtnost_pct'] = (hladina_stats['usmrceni'] / hladina_stats['nehod']) * 100
+    hladina_filtered = hladina_stats[hladina_stats['nehod'] >= 20].sort_values('umrtnost_pct', ascending=False)
+
+    if not hladina_filtered.empty:
+        y_labels = hladina_filtered.index
+        bars5 = ax2e.barh(range(len(hladina_filtered)), hladina_filtered['umrtnost_pct'], color='darkred')
+        ax2e.set_yticks(range(len(hladina_filtered)))
+        ax2e.set_yticklabels(y_labels, fontsize=9)
+        ax2e.invert_yaxis()
+        ax2e.set_xlabel('Úmrtnost (% z nehod v kategorii)')
+        ax2e.set_title('Úmrtnost podle hladiny alkoholu řidiče')
+
+        for bar, (nehod, usmrceni) in zip(bars5, zip(hladina_filtered['nehod'], hladina_filtered['usmrceni'])):
+            width = bar.get_width()
+            ax2e.text(width * 1.01, bar.get_y() + bar.get_height()/2,
+                      f"{width:.2f}% | {int(usmrceni)} usmrc., {int(nehod)} nehod",
+                      va='center', ha='left', fontsize=8)
+
+        plt.tight_layout(rect=[0, 0, 0.82, 1])
+        plt.savefig("graphs/nehody/nehody_alkohol_umrtnost.png", dpi=150)
+        print("Graf 2e: graphs/nehody/nehody_alkohol_umrtnost.png")
+        plt.close()
 
 # Graf 3: Hlavní příčiny
 if 'hlavni_pricina' in df.columns:
