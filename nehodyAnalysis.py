@@ -407,7 +407,7 @@ if 'x' in df.columns and 'y' in df.columns:
                            c=sample['usmrceno_os'], 
                            cmap='magma_r', 
                            norm=PowerNorm(gamma=0.25),
-                           alpha=0.4, 
+                           alpha=0.7, 
                            s=5)
         ax8.set_xlabel('X souřadnice')
         ax8.set_ylabel('Y souřadnice')
