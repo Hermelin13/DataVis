@@ -1,15 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-from datetime import datetime
-import sys
 
 # Nastavení pro český výstup
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial']
 plt.rcParams['axes.unicode_minus'] = False
 
 # Otevření souboru pro zápis výstupu
-output_file = open('graphs/nehody/nehody_analyza_report.txt', 'w', encoding='utf-8')
+output_file = open('graphs/nehody_analyza_report.txt', 'w', encoding='utf-8')
 
 def tiskni(text=""):
     output_file.write(text + '\n')
@@ -226,8 +223,8 @@ for bar, value in zip(bars2, usmrceni_rok.values):
              f"{value:}", ha='center', va='bottom', fontsize=8, rotation=0)
 
 plt.tight_layout()
-plt.savefig("graphs/nehody/nehody_podle_roku.png", dpi=150)
-print("Graf 1: graphs/nehody/nehody_podle_roku.png")
+plt.savefig("graphs/nehody_podle_roku.png", dpi=150)
+print("Graf 1: graphs/nehody_podle_roku.png")
 plt.close()
 
 # Graf 2: Top 10 lokalit
@@ -249,8 +246,8 @@ for bar, value in zip(bars1, top_10.values):
              f"{value:}", va='center', ha='left', fontsize=8)
 
 plt.tight_layout()
-plt.savefig("graphs/nehody/nehody_top_lokality.png", dpi=150)
-print("Graf 2: graphs/nehody/nehody_top_lokality.png")
+plt.savefig("graphs/nehody_top_lokality.png", dpi=150)
+print("Graf 2: graphs/nehody_top_lokality.png")
 plt.close()
 
 # Graf 2b: Top 10 lokalit podle počtu usmrcených
@@ -273,8 +270,8 @@ for bar, usmr in zip(bars2, top_10_usmrceni.values):
               f"{int(usmr)}", va='center', ha='left', fontsize=8)
 
 plt.tight_layout()
-plt.savefig("graphs/nehody/nehody_top_lokality_usmrceni.png", dpi=150)
-print("Graf 2b: graphs/nehody/nehody_top_lokality_usmrceni.png")
+plt.savefig("graphs/nehody_top_lokality_usmrceni.png", dpi=150)
+print("Graf 2b: graphs/nehody_top_lokality_usmrceni.png")
 plt.close()
 
 # Graf 2c: Top 10 lokalit - procento usmrcených na nehodu (podle procent)
@@ -305,8 +302,8 @@ for bar, procento, nehod, usmr in zip(bars3, top_10_procenta.values, pocet_nehod
     )
 
 plt.tight_layout()
-plt.savefig("graphs/nehody/nehody_top_lokality_procenta_usmrceni.png", dpi=150)
-print("Graf 2c: graphs/nehody/nehody_top_lokality_procenta_usmrceni.png")
+plt.savefig("graphs/nehody_top_lokality_procenta_usmrceni.png", dpi=150)
+print("Graf 2c: graphs/nehody_top_lokality_procenta_usmrceni.png")
 plt.close()
 
 # Graf 3: Hlavní příčiny
@@ -334,8 +331,8 @@ if 'hlavni_pricina' in df.columns:
     ax3.legend(wedges, legend_labels, title='Příčiny', bbox_to_anchor=(0.95, 0.5), loc='center left')
     plt.subplots_adjust(right=0.78)
     plt.tight_layout()
-    plt.savefig("graphs/nehody/nehody_priciny.png", dpi=150)
-    print("Graf 3: graphs/nehody/nehody_priciny.png")
+    plt.savefig("graphs/nehody_priciny.png", dpi=150)
+    print("Graf 3: graphs/nehody_priciny.png")
     plt.close()
 
 # Graf 4: Nehody podle měsíců
@@ -359,43 +356,7 @@ if 'mesic' in df.columns:
     lines2, labels2 = ax4_2.get_legend_handles_labels()
     ax4.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
     plt.tight_layout()
-    plt.savefig("graphs/nehody/nehody_podle_mesicu.png", dpi=150)
-    print("Graf 4: graphs/nehody/nehody_podle_mesicu.png")
-    plt.close()
-
-# Graf 5: Nehody podle dne v týdnu
-if 'den_v_tydnu' in df.columns:
-    fig5, ax5 = plt.subplots(figsize=(10, 6))
-    dny_data = df['den_v_tydnu'].value_counts()
-    usmrceni_dny = df.groupby('den_v_tydnu')['usmrceno_os'].sum()
-    dny_order = ['pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota', 'neděle']
     
-    # Seřadit podle pořadí dní
-    dny_data = dny_data.reindex([d for d in dny_order if d in dny_data.index])
-    usmrceni_dny = usmrceni_dny.reindex([d for d in dny_order if d in usmrceni_dny.index])
-    
-    x = range(len(dny_data))
-    width = 0.35
-    bars1 = ax5.bar([i - width/2 for i in x], dny_data.values, width, label='Počet nehod', color='coral')
-    bars2 = ax5.bar([i + width/2 for i in x], usmrceni_dny.values, width, label='Počet usmrcených', color='darkred')
-    
-    ax5.set_xticks(x)
-    ax5.set_xticklabels(dny_data.index, rotation=45, ha='right')
-    ax5.set_ylabel('Počet')
-    ax5.legend()
-    ax5.grid(axis='y', alpha=0.3)
-    
-    for bar, value in zip(bars1, dny_data.values):
-        height = bar.get_height()
-        ax5.text(bar.get_x() + bar.get_width()/2, height * 1.005, f"{value:}", ha='center', va='bottom', fontsize=8)
-    for bar, value in zip(bars2, usmrceni_dny.values):
-        height = bar.get_height()
-        ax5.text(bar.get_x() + bar.get_width()/2, height * 1.005, f"{value:}", ha='center', va='bottom', fontsize=8)
-    
-    plt.tight_layout()
-    plt.savefig("graphs/nehody/nehody_podle_dne.png", dpi=150)
-    print("Graf 5: graphs/nehody/nehody_podle_dne.png")
-    plt.close()
 
 # Graf 6: Nehody podle času ve dne (hodinové intervaly)
 if 'hodina' in df.columns:
@@ -427,42 +388,8 @@ if 'hodina' in df.columns:
         ax6.text(bar.get_x() + bar.get_width()/2, height * 1.005, f"{value:}", ha='center', va='bottom', fontsize=7)
     
     plt.tight_layout()
-    plt.savefig("graphs/nehody/nehody_podle_casu.png", dpi=150)
-    print("Graf 6: graphs/nehody/nehody_podle_casu.png")
-    plt.close()
-
-# Graf 7: Typ auta účastníků nehody
-if 'typ_vozidla' in df.columns or 'vozidlo' in df.columns:
-    fig7, ax7 = plt.subplots(figsize=(12, 7))
-    
-    # Pokus najít správný sloupec
-    vozidlo_col = 'typ_vozidla' if 'typ_vozidla' in df.columns else 'vozidlo'
-    typ_data = df[vozidlo_col].value_counts().head(15)
-    usmrceni_typ = df.groupby(vozidlo_col)['usmrceno_os'].sum().reindex(typ_data.index)
-    
-    x = range(len(typ_data))
-    width = 0.35
-    bars1 = ax7.barh([i - width/2 for i in x], typ_data.values, width, label='Počet nehod', color='coral')
-    bars2 = ax7.barh([i + width/2 for i in x], usmrceni_typ.values, width, label='Počet usmrcených', color='darkred')
-    
-    ax7.set_yticks(x)
-    ax7.set_yticklabels(typ_data.index, fontsize=9)
-    ax7.set_xlabel('Počet')
-    ax7.legend()
-    ax7.invert_yaxis()
-    
-    for bar, value in zip(bars1, typ_data.values):
-        width = bar.get_width()
-        ax7.text(width * 1.01, bar.get_y() + bar.get_height()/2,
-                 f"{value:}", va='center', ha='left', fontsize=8)
-    for bar, value in zip(bars2, usmrceni_typ.values):
-        width = bar.get_width()
-        ax7.text(width * 1.01, bar.get_y() + bar.get_height()/2,
-                 f"{value:}", va='center', ha='left', fontsize=8)
-    
-    plt.tight_layout()
-    plt.savefig("graphs/nehody/nehody_typ_vozidla.png", dpi=150)
-    print("Graf 7: graphs/nehody/nehody_typ_vozidla.png")
+    plt.savefig("graphs/nehody_podle_casu.png", dpi=150)
+    print("Graf 6: graphs/nehody_podle_casu.png")
     plt.close()
 
 # Graf 8: Mapa nehod (pokud jsou souřadnice)
@@ -487,8 +414,37 @@ if 'x' in df.columns and 'y' in df.columns:
         cbar = plt.colorbar(scatter, label='Počet usmrcených', ax=ax8)
         cbar.ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
         plt.tight_layout()
-        plt.savefig("graphs/nehody/nehody_mapa.png", dpi=150)
-        print("Graf 8: graphs/nehody/nehody_mapa.png")
+        plt.savefig("graphs/nehody_mapa.png", dpi=150)
+        print("Graf 8: graphs/nehody_mapa.png")
+        plt.close()
+
+    # Graf 9: Heatmapa den v týdnu × hodina
+    if 'den_v_tydnu' in df.columns and 'hodina' in df.columns:
+        # Filtrovat platné hodiny (0-23) a platné dny
+        df_hm = df[(df['hodina'].notna()) & (df['hodina'] < 24)].copy()
+        df_hm['hodina_int'] = df_hm['hodina'].astype(int)
+        dny_order = ['pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota', 'neděle']
+        # Zachovat jen záznamy s platným dnem v týdnu
+        df_hm = df_hm[df_hm['den_v_tydnu'].isin(dny_order)]
+
+        # Kontingenční tabulka (počet nehod) den × hodina
+        pivot = df_hm.groupby(['den_v_tydnu', 'hodina_int']).size().unstack(fill_value=0)
+        pivot = pivot.reindex(dny_order)
+        pivot = pivot.reindex(range(0, 24), axis=1, fill_value=0)
+
+        fig9, ax9 = plt.subplots(figsize=(14, 6))
+        im = ax9.imshow(pivot.values, aspect='auto', cmap='YlOrRd', origin='upper')
+        ax9.set_xticks(range(24))
+        ax9.set_xticklabels([f"{h:02d}" for h in range(24)])
+        ax9.set_yticks(range(len(dny_order)))
+        ax9.set_yticklabels(dny_order)
+        ax9.set_xlabel('Hodina')
+        ax9.set_ylabel('Den v týdnu')
+        cbar = plt.colorbar(im, ax=ax9)
+        cbar.set_label('Počet nehod')
+        plt.tight_layout()
+        plt.savefig("graphs/nehody_podle_dne_hodiny_heatmap.png", dpi=150)
+        print("Graf 9: graphs/nehody_podle_dne_hodiny_heatmap.png")
         plt.close()
 
 output_file.close()
